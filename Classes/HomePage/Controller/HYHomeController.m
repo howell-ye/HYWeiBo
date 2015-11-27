@@ -26,24 +26,27 @@
 #import "HYAccount.h"
 #import "HYAccountTool.h"
 
+#import "HYStatusFrame.h"
+#import "HYStatusCell.h"
+
 @interface HYHomeController()<HYCoverDelegate>
 
 @property(nonatomic, weak)HYTitleButton *titleButton;
 
 @property(nonatomic, strong)HYOneViewController *one;
 
-@property(nonatomic, strong)NSMutableArray *statuses;
+@property(nonatomic, strong)NSMutableArray *statusFrames;
 
 @end
 
 @implementation HYHomeController
 
--(NSMutableArray *)statuses
+-(NSMutableArray *)statusFrames
 {
-    if (_statuses == nil) {
-        _statuses = [NSMutableArray array];
+    if (_statusFrames == nil) {
+        _statusFrames = [NSMutableArray array];
     }
-    return _statuses;
+    return _statusFrames;
 }
 
 -(HYOneViewController *)one
@@ -77,21 +80,38 @@
     }];
 }
 
+
+- (void)refresh{
+    
+    // 自动下拉刷新
+    [self.tableView headerBeginRefreshing];
+    
+}
+
+
 -(void)loadNewStatus
 {
     NSString *sinceId = nil;
-    if (self.statuses.count) { // 有微博数据，才需要下拉刷新
+    if (self.statusFrames.count) { // 有微博数据，才需要下拉刷新
         
-        sinceId = [self.statuses[0] idstr];
+        HYStatus *s = [self.statusFrames[0] status];
+        sinceId = s.idstr;
     }
     [HYStatusTool newStatusWithSinceId:sinceId success:^(NSArray *statuses){
         [self showNewStatusCount:statuses.count];
         
         [self.tableView headerEndRefreshing];
         
+        NSMutableArray *statusFrames = [NSMutableArray array];
+        for (HYStatus *status in statuses) {
+            HYStatusFrame *statusF = [[HYStatusFrame alloc] init];
+            statusF.status = status;
+            [statusFrames addObject:statusF];
+        }
+        
         NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, statuses.count)];
         // 把最新的微博数插入到最前面
-        [self.statuses insertObjects:statuses atIndexes:indexSet];
+        [self.statusFrames insertObjects:statusFrames atIndexes:indexSet];
         
         // 刷新表格
         [self.tableView reloadData];
@@ -104,8 +124,9 @@
 -(void)loadMoreStatus
 {
     NSString *maxIdStr = nil;
-    if (self.statuses.count) {
-        long long maxId = [[[self.statuses lastObject] idstr] longLongValue]-1;
+    if (self.statusFrames.count) {
+        HYStatus *s = [self.statusFrames[0] status];
+        long long maxId = [s.idstr longLongValue]-1;
         maxIdStr = [NSString stringWithFormat:@"%lld",maxId];
     }
     
@@ -113,8 +134,15 @@
         // 结束上拉刷新
         [self.tableView footerEndRefreshing];
         
+        NSMutableArray *statusFrames = [NSMutableArray array];
+        for (HYStatus *status in statuses) {
+            HYStatusFrame *statusF = [[HYStatusFrame alloc] init];
+            statusF.status = status;
+            [statusFrames addObject:statusF];
+        }
+        
         // 把数组中的元素添加进去
-        [self.statuses addObjectsFromArray:statuses];
+        [self.statusFrames addObjectsFromArray:statusFrames];
         
         // 刷新表格
         [self.tableView reloadData];
@@ -210,23 +238,24 @@
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.statuses.count;
+    return self.statusFrames.count;
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *ID = @"cell";
-    UITableViewCell *cell = [tableView dequeueReusableHeaderFooterViewWithIdentifier:ID];
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:ID];
-    }
-    HYStatus *status = self.statuses[indexPath.row];
-    cell.textLabel.text = status.user.name;
-    [cell.imageView sd_setImageWithURL:status.user.profile_image_url placeholderImage:[UIImage imageNamed:@"timeline_image_placeholder"]];
-    cell.detailTextLabel.text = status.text;
+    HYStatusCell *cell = [HYStatusCell cellWithTableView:tableView];
+    
+    HYStatusFrame *statusF = self.statusFrames[indexPath.row];
+    
+    cell.statusF = statusF;
     return cell;
 }
 
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    HYStatusFrame *statusF = self.statusFrames[indexPath.row];
+    return statusF.cellHeight;
+}
 
 @end
 

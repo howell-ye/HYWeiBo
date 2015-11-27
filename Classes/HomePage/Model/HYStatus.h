@@ -17,7 +17,8 @@
 
 @property(nonatomic, strong)HYUser *user;
 
-@property(nonatomic, copy)NSString *creat_at;
+@property(nonatomic, copy)NSString *retweetName;
+
 
 /**
  *  微博创建时间

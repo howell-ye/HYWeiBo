@@ -15,7 +15,11 @@
 
 #define HYKeyWindow [UIApplication sharedApplication].keyWindow
 
-// Include any system framework and library headers here that should be included in all compilation units.
-// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+#define HYStatusCellMargin 10
+#define HYNameFont [UIFont systemFontOfSize:13]
+#define HYTimeFont [UIFont systemFontOfSize:12]
+#define HYSourceFont HYTimeFont
+#define HYTextFont [UIFont systemFontOfSize:15]
+#define HYScreenW [UIScreen mainScreen].bounds.size.width
 
 #endif
