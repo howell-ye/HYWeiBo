@@ -10,6 +10,7 @@
 
 #import "HYStatus.h"
 #import "HYStatusFrame.h"
+#import "HYPhotosView.h"
 
 @interface HYRetweetView()
 
@@ -19,6 +20,8 @@
 
 // 正文
 @property (nonatomic, weak) UILabel *textView;
+
+@property (nonatomic, weak)HYPhotosView *photoView;
 
 @end
 
@@ -51,6 +54,11 @@
     textView.numberOfLines = 0;
     [self addSubview:textView];
     _textView = textView;
+    
+    //配图
+    HYPhotosView *photoView  = [[HYPhotosView alloc] init];
+    [self addSubview:photoView];
+    _photoView = photoView;
 }
 
 - (void)setStatusF:(HYStatusFrame *)statusF
@@ -66,6 +74,9 @@
     // 正文
     _textView.frame = statusF.retweetTextFrame;
     _textView.text = status.retweeded_status.text;
+    
+    _photoView.frame = statusF.retweetPhotosFrame;
+    _photoView.pic_urls = status.retweeded_status.pic_urls;
 }
 
 

@@ -68,12 +68,22 @@
     CGSize textSize = [_status.text sizeWithFont:HYTextFont constrainedToSize:CGSizeMake(textW, MAXFLOAT)];
     _originalTextFrame = (CGRect){{textX,textY},textSize};
     
-    //总
+    CGFloat originH = CGRectGetMaxY(_originalTextFrame) + HYStatusCellMargin;
+    //配图
+    if (_status.pic_urls.count) {
+        CGFloat photoX = HYStatusCellMargin;
+        CGFloat photoY = CGRectGetMaxY(_originalTextFrame)+HYStatusCellMargin;
+        CGSize photoSize = [self photoSizeWithCount:_status.pic_urls.count];
+        _originalPhotosFrame = (CGRect){{photoX,photoY},photoSize};
+        originH = CGRectGetMaxY(_originalPhotosFrame) + HYStatusCellMargin;
+    }
+    
+    
     // 原创微博的frame
     CGFloat originX = 0;
     CGFloat originY = 10;
     CGFloat originW = HYScreenW;
-    CGFloat originH = CGRectGetMaxY(_originalTextFrame) + HYStatusCellMargin;
+    
     _originalViewFrame = CGRectMake(originX, originY, originW, originH);
 }
 
@@ -96,25 +106,40 @@
     CGSize textSize = [_status.retweeded_status.text sizeWithFont:HYTextFont constrainedToSize:CGSizeMake(textW, MAXFLOAT)];
     _retweetTextFrame = (CGRect){{textX,textY},textSize};
     
+    CGFloat retweetH = CGRectGetMaxY(_retweetTextFrame) + HYStatusCellMargin;
+    int count = _status.retweeded_status.pic_urls.count;
+    if (count) {
+        CGFloat photosX = HYStatusCellMargin;
+        CGFloat photosY = CGRectGetMaxY(_retweetTextFrame) + HYStatusCellMargin;
+        CGSize photosSize = [self photoSizeWithCount:count];
+        
+        _retweetPhotosFrame = (CGRect){{photosX,photosY},photosSize};
+        
+        retweetH = CGRectGetMaxY(_retweetPhotosFrame) + HYStatusCellMargin;
+    }
     // 原创微博的frame
     CGFloat retweetX = 0;
     CGFloat retweetY = CGRectGetMaxY(_originalViewFrame);
     CGFloat retweetW = HYScreenW;
-    CGFloat retweetH = CGRectGetMaxY(_retweetTextFrame) + HYStatusCellMargin;
+    
     _retweetViewFrame = CGRectMake(retweetX, retweetY, retweetW, retweetH);
     
 }
 
-
+-(CGSize)photoSizeWithCount:(int)count
+{
+    int cols = count==4?2:3;
+    
+    int rols = (count - 1) / cols + 1;
+    CGFloat photoWH = 70;
+    CGFloat w = cols * photoWH + (cols - 1) * HYStatusCellMargin;
+    CGFloat h = rols * photoWH + (rols - 1) * HYStatusCellMargin;
+    
+    
+    return CGSizeMake(w, h);
+}
 
 @end
-
-
-
-
-
-
-
 
 
 

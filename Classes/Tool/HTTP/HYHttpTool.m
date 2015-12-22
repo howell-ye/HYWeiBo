@@ -8,6 +8,7 @@
 
 #import "HYHttpTool.h"
 #import "AFNetworking.h"
+#import "HYUploadParam.h"
 
 @implementation HYHttpTool
 
@@ -40,4 +41,44 @@
     }];
 }
 
++(void)upload:(NSString *)urlString parameters:(id)parameters uploadParam:(HYUploadParam *)uploadParam success:(void (^)(id))success failure:(void (^)(NSError *))failure
+{
+    AFHTTPRequestOperationManager *mgr = [AFHTTPRequestOperationManager manager];
+    [mgr POST:urlString parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData){
+        [formData appendPartWithFileData:uploadParam.data name:uploadParam.name fileName:uploadParam.fileName mimeType:uploadParam.mimeType];
+    } success:^(AFHTTPRequestOperation *operation, id responseObject){
+        if (success) {
+            success(responseObject);
+        }
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error){
+        if (failure) {
+            failure(error);
+        }
+    }];
+}
+
 @end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -8,6 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HYStatusToolBar : UIView
+@class HYStatus;
+@interface HYStatusToolBar : UIImageView
+
+@property(nonatomic, strong)HYStatus *status;
 
 @end

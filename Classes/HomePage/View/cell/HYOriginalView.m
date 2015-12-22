@@ -9,6 +9,7 @@
 #import "HYOriginalView.h"
 #import "HYStatusFrame.h"
 #import "HYStatus.h"
+#import "HYPhotosView.h"
 
 #import "UIImageView+WebCache.h"
 
@@ -35,6 +36,8 @@
 
 // 正文
 @property (nonatomic, weak) UILabel *textView;
+
+@property (nonatomic, weak)HYPhotosView *photoView;
 
 @end
 
@@ -87,6 +90,11 @@
     textView.numberOfLines = 0;
     [self addSubview:textView];
     _textView = textView;
+    
+    //配图
+    HYPhotosView *photoView = [[HYPhotosView alloc] init];
+    [self addSubview:photoView];
+    _photoView = photoView;
 }
 
 -(void)setStatusF:(HYStatusFrame *)statusF
@@ -124,6 +132,8 @@
     
     // 正文
     _textView.text = status.text;
+    
+    _photoView.pic_urls = status.pic_urls;
 }
 
 -(void)setUpFrame
@@ -141,13 +151,27 @@
         _vipView.hidden = YES;
     }
     // 时间
-    _timeView.frame = _statusF.originalTimeFrame;
+    HYStatus *status = _statusF.status;
+    CGFloat timeX = _nameView.frame.origin.x;
+    CGFloat timeY = CGRectGetMaxY(_nameView.frame)+HYStatusCellMargin*0.5;
+    CGSize timeSize = [status.created_at sizeWithFont:HYTimeFont];
+    _timeView.frame = (CGRect){{timeX,timeY},timeSize};
+    
+    
+//    _timeView.frame = _statusF.originalTimeFrame;
     
     // 来源
+    CGFloat sourceX = CGRectGetMaxX(_timeView.frame) + HYStatusCellMargin;
+    CGFloat sourceY = timeY;
+    CGSize sourceSize = [status.source sizeWithFont:HYSourceFont];
+    _sourceView.frame = (CGRect){{sourceX,sourceY},sourceSize};
     _sourceView.frame = _statusF.originalSourceFrame;
     
     // 正文
     _textView.frame = _statusF.originalTextFrame;
+    
+    //配图
+    _photoView.frame = _statusF.originalPhotosFrame;
 }
 
 

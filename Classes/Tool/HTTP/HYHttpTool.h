@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+@class HYUploadParam;
 @interface HYHttpTool : NSObject
 
 +(void)GET:(NSString *)urlString parameters:(id)parameters success:(void(^)(id responseObject))success failure:(void (^)(NSError *error))failure;
@@ -15,4 +16,5 @@
 
 +(void)POST:(NSString *)urlString parameters:(id)parameters success:(void(^)(id))success failure:(void(^)(NSError *))failure;
 
++(void)upload:(NSString *)urlString parameters:(id)parameters uploadParam:(HYUploadParam *)uploadParam success:(void(^)(id responseObject))success failure:(void(^)(NSError *error))failure;
 @end
